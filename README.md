@@ -753,7 +753,7 @@ If this project is intended to be publicly distributed or reused, add an appropr
 
 👨‍💻 Author
 
-Your Name
+Nakshtra Padalia
 
 Built as a DAA-focused hostel allocation management system for Graphic Era Hill University, Bhimtal.
 
