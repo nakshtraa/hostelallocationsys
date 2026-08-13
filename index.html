@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hostel Allocator GEHU BHIMTAL | DAA Enterprise Suite</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet"/>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Plus Jakarta Sans', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace']
+          }
+        }
+      }
+    }
+  </script>
+  
+  <link rel="stylesheet" href="css/style.css">
+
+</head>
+<body class="min-h-screen">
+
+<div id="auth-screen" class="fixed inset-0 z-[100] flex items-center justify-center bg-slate-100 dark:bg-slate-950">
+  <div class="max-w-md w-full p-10 glass-ui rounded-[3rem] shadow-2xl text-center relative overflow-hidden">
+    <div class="absolute -top-10 -right-10 w-40 h-40 bg-blue-500/10 rounded-full blur-3xl"></div>
+    <div class="relative z-10">
+      <div class="mb-6 inline-flex p-4 rounded-3xl bg-blue-600 text-white shadow-xl">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 00-2 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+        </svg>
+      </div>
+      <h2 class="text-3xl font-black mb-2 tracking-tight">System Access</h2>
+      <p class="text-slate-500 dark:text-slate-400 text-sm mb-8">Enter administrative credentials to initialize the DAA Engine.</p>
+      <div class="space-y-4">
+        <div class="text-left">
+          <label class="text-[10px] uppercase font-black text-slate-400 ml-4 mb-1 block">Warden ID</label>
+          <input id="login-id" type="text" placeholder="ADMIN-001" class="w-full px-6 py-4 rounded-2xl bg-slate-200/50 dark:bg-white/5 border-none outline-none focus:ring-2 focus:ring-blue-500 transition">
+        </div>
+        <div class="text-left">
+          <label class="text-[10px] uppercase font-black text-slate-400 ml-4 mb-1 block">Passphrase</label>
+          <input id="login-pass" type="password" placeholder="••••••••" class="w-full px-6 py-4 rounded-2xl bg-slate-200/50 dark:bg-white/5 border-none outline-none focus:ring-2 focus:ring-blue-500 transition">
+        </div>
+        <button onclick="handleLogin()" class="w-full py-5 bg-blue-600 hover:bg-blue-700 text-white font-black rounded-2xl shadow-xl transition-all active:scale-95">AUTHENTICATE</button>
+      </div>
+      <p id="auth-err" class="mt-4 text-xs font-bold text-red-500 opacity-0 transition-opacity">Access Denied. Internal Log: 401 Unauthorized.</p>
+    </div>
+  </div>
+</div>
+
+<div id="app-content" class="hidden opacity-0 transition-opacity duration-1000">
+  <div class="fixed left-6 top-1/2 -translate-y-1/2 flex flex-col gap-4 z-50">
+    <button onclick="toggleTheme()" class="p-4 glass-ui rounded-2xl hover:bg-blue-600 hover:text-white transition-all shadow-xl">
+      <span id="theme-icon">🌙</span>
+    </button>
+  </div>
+
+  <header class="container mx-auto px-6 py-8 flex flex-col md:flex-row justify-between items-center gap-6">
+    <div class="flex items-center gap-4">
+      <div class="w-12 h-12 bg-blue-600 rounded-2xl flex items-center justify-center text-white font-black text-xl shadow-lg shadow-blue-500/40">H</div>
+      <div>
+        <h1 class="text-2xl font-black tracking-tight">
+          Graphic Era Hill University <span class="text-blue-600">Hostel Allocator</span>
+        </h1>
+        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest flex items-center gap-2">
+          <span class="w-2 h-2 bg-emerald-500 rounded-full status-pulse"></span> GEHU Hostel System Active
+        </p>
+      </div>
+    </div>
+
+    <nav class="flex gap-2 p-2 glass-ui rounded-3xl overflow-x-auto max-w-full">
+      <button class="nav-tab px-6 py-3 rounded-2xl font-bold text-sm transition-all tab-active" onclick="switchTab('dashboard',event)">Dashboard</button>
+      <button class="nav-tab px-6 py-3 rounded-2xl font-bold text-sm transition-all" onclick="switchTab('students',event)">Candidates</button>
+      <button class="nav-tab px-6 py-3 rounded-2xl font-bold text-sm transition-all" onclick="switchTab('rooms',event)">Inventory</button>
+      <button class="nav-tab px-6 py-3 rounded-2xl font-bold text-sm transition-all" onclick="switchTab('engine',event)">DAA Engine</button>
+      <button class="nav-tab px-6 py-3 rounded-2xl font-bold text-sm transition-all" onclick="switchTab('analytics',event)">Analytics</button>
+      <!-- New Support Tab -->
+      <button class="nav-tab px-6 py-3 rounded-2xl font-bold text-sm transition-all" onclick="switchTab('support',event)">Support</button>
+    </nav>
+  </header>
+
+  <main class="container mx-auto px-6 pb-20">
+
+    <!-- Dashboard -->
+    <section id="tab-dashboard" class="tab-content space-y-8">
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <div class="glass-ui p-8 rounded-[2.5rem] relative overflow-hidden group">
+          <div class="text-xs font-black text-slate-400 uppercase mb-4">Registry</div>
+          <div id="stat-students" class="text-6xl font-black tracking-tighter">0</div>
+          <div class="absolute bottom-0 right-0 p-4 opacity-10 group-hover:scale-110 transition-transform">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+            </svg>
+          </div>
+        </div>
+        <div class="glass-ui p-8 rounded-[2.5rem] relative overflow-hidden group">
+          <div class="text-xs font-black text-slate-400 uppercase mb-4">Room Stock</div>
+          <div id="stat-rooms" class="text-6xl font-black tracking-tighter text-purple-600">0</div>
+        </div>
+        <div class="glass-ui p-8 rounded-[2.5rem] relative overflow-hidden group">
+          <div class="text-xs font-black text-slate-400 uppercase mb-4">Availability</div>
+          <div id="stat-avail" class="text-6xl font-black tracking-tighter text-emerald-500">0</div>
+        </div>
+        <div class="glass-ui p-8 rounded-[2.5rem] relative overflow-hidden group">
+          <div class="text-xs font-black text-slate-400 uppercase mb-4">Success Rate</div>
+          <div id="stat-rate" class="text-6xl font-black tracking-tighter text-blue-500">0%</div>
+        </div>
+      </div>
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div class="lg:col-span-2 glass-ui p-10 rounded-[3rem]">
+          <h3 class="text-xl font-black mb-6">Recent Activity Log</h3>
+          <div id="audit-trail" class="space-y-3 font-mono text-[11px] h-64 overflow-y-auto pr-4">
+            <div class="log-entry">System initialized at <span id="boot-time"></span></div>
+          </div>
+        </div>
+        <div class="glass-ui p-10 rounded-[3rem] bg-blue-600 text-white">
+          <h3 class="text-xl font-black mb-2">DAA Intelligence</h3>
+          <p class="text-sm opacity-80 mb-6">Using Greedy Optimization for localized optimality.</p>
+          <div class="space-y-4">
+            <div class="flex justify-between items-center bg-white/10 p-4 rounded-2xl">
+              <span class="font-bold text-sm">Complexity</span>
+              <span class="font-mono text-xs">O(N log N)</span>
+            </div>
+            <div class="flex justify-between items-center bg-white/10 p-4 rounded-2xl">
+              <span class="font-bold text-sm">Space Metric</span>
+              <span class="font-mono text-xs">O(N + M)</span>
+            </div>
+            <button onclick="simulateTraffic()" class="w-full py-4 bg-white text-blue-600 font-black rounded-xl hover:bg-slate-100 transition-colors">RUN SIMULATION</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Students Tab -->
+    <section id="tab-students" class="tab-content hidden space-y-8">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div class="glass-ui p-10 rounded-[3rem]">
+          <h3 class="text-2xl font-black mb-8">Enrollment Desk</h3>
+          <form id="stu-form" class="space-y-5">
+            <div class="grid grid-cols-2 gap-4">
+              <div class="space-y-1">
+                <label class="text-[10px] font-black uppercase text-slate-400 ml-2">Internal ID</label>
+                <input type="text" id="s-roll" placeholder="STU-101" required class="w-full px-5 py-4 rounded-2xl bg-slate-100 dark:bg-white/5 outline-none focus:ring-2 focus:ring-blue-500">
+              </div>
+              <div class="space-y-1">
+                <label class="text-[10px] font-black uppercase text-slate-400 ml-2">Full Name</label>
+                <input type="text" id="s-name" placeholder="John Doe" required class="w-full px-5 py-4 rounded-2xl bg-slate-100 dark:bg-white/5 outline-none focus:ring-2 focus:ring-blue-500">
+              </div>
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+              <div class="space-y-1">
+                <label class="text-[10px] font-black uppercase text-slate-400 ml-2">Batch Year</label>
+                <select id="s-year" class="w-full px-5 py-4 rounded-2xl bg-slate-100 dark:bg-white/5 outline-none dark:text-white">
+                  <option value="4">Final Year (Seniority 4)</option>
+                  <option value="3">Third year (Seniority 3)</option>
+                  <option value="2">Second year (Seniority 2)</option>
+                  <option value="1">Fresher (Seniority 1)</option>
+                </select>
+              </div>
+              <div class="space-y-1" id="cgpa-group">
+                <label class="text-[10px] font-black uppercase text-slate-400 ml-2">Academic Merit (CGPA)</label>
+                <input type="number" id="s-cgpa" step="0.01" max="10" placeholder="9.5" required class="w-full px-5 py-4 rounded-2xl bg-slate-100 dark:bg-white/5 outline-none focus:ring-2 focus:ring-blue-500">
+              </div>
+              <div class="space-y-1 hidden" id="payment-group">
+                <label class="text-[10px] font-black uppercase text-slate-400 ml-2">Fees Payment Date</label>
+                <input type="date" id="s-payment-date" class="w-full px-5 py-4 rounded-2xl bg-slate-100 dark:bg-white/5 outline-none focus:ring-2 focus:ring-blue-500">
+              </div>
+            </div>
+            <div class="p-6 rounded-[2rem] bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10">
+              <p class="text-[10px] font-black uppercase mb-4 text-blue-500 tracking-widest">Resource Preferences</p>
+              <div class="grid grid-cols-2 gap-4 text-xs font-bold">
+                <label class="flex items-center gap-3 p-3 rounded-xl hover:bg-white dark:hover:bg-white/5 cursor-pointer transition">
+                  <input type="checkbox" id="p-sac" class="w-4 h-4 rounded text-blue-600"> Single AC
+                </label>
+                <label class="flex items-center gap-3 p-3 rounded-xl hover:bg-white dark:hover:bg-white/5 cursor-pointer transition">
+                  <input type="checkbox" id="p-snac" class="w-4 h-4 rounded text-blue-600"> Single Non-AC
+                </label>
+                <label class="flex items-center gap-3 p-3 rounded-xl hover:bg-white dark:hover:bg-white/5 cursor-pointer transition">
+                  <input type="checkbox" id="p-dac" class="w-4 h-4 rounded text-blue-600"> Double AC
+                </label>
+                <label class="flex items-center gap-3 p-3 rounded-xl hover:bg-white dark:hover:bg-white/5 cursor-pointer transition">
+                  <input type="checkbox" id="p-dnac" class="w-4 h-4 rounded text-blue-600"> Double Non-AC
+                </label>
+              </div>
+            </div>
+            <button type="submit" class="w-full py-5 bg-slate-900 dark:bg-blue-600 text-white font-black rounded-2xl shadow-xl hover:scale-[1.02] transition-transform">REGISTER CANDIDATE</button>
+          </form>
+        </div>
+        <div class="glass-ui rounded-[3rem] overflow-hidden flex flex-col shadow-inner">
+          <div class="p-8 border-b dark:border-white/10 bg-slate-50/50 dark:bg-white/5 flex justify-between items-center">
+            <h3 class="text-xl font-black">Candidate Registry</h3>
+            <span id="reg-count" class="px-3 py-1 bg-blue-100 dark:bg-blue-600 text-blue-600 dark:text-white rounded-full text-[10px] font-black">0 TOTAL</span>
+          </div>
+          <div class="overflow-y-auto flex-1 max-h-[600px]">
+            <table class="w-full text-left">
+              <thead class="sticky top-0 bg-slate-100 dark:bg-slate-900 z-10">
+                <tr class="text-[10px] font-black uppercase text-slate-400">
+                  <th class="p-6">Identifier</th>
+                  <th class="p-6">Candidate</th>
+                  <th class="p-6">Merit Score</th>
+                  <th class="p-6 text-right">Delete</th>
+                </tr>
+              </thead>
+              <tbody id="stu-list" class="divide-y dark:divide-white/5"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Rooms Tab -->
+    <section id="tab-rooms" class="tab-content hidden space-y-8">
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div class="glass-ui p-10 rounded-[3rem]">
+          <h3 class="text-2xl font-black mb-8">Inventory Update</h3>
+          <form id="room-form" class="space-y-5">
+            <div class="space-y-1">
+              <label class="text-[10px] font-black uppercase text-slate-400 ml-2">Room Serial</label>
+              <input type="text" id="r-id" placeholder="BLOCK-A-101" required class="w-full px-5 py-4 rounded-2xl bg-slate-100 dark:bg-white/5 outline-none">
+            </div>
+            <div class="space-y-1">
+              <label class="text-[10px] font-black uppercase text-slate-400 ml-2">Classification</label>
+              <select id="r-type" class="w-full px-5 py-4 rounded-2xl bg-slate-100 dark:bg-white/5 outline-none dark:text-white">
+                <option value="Single AC">Single AC</option>
+                <option value="Single Non-AC">Single Non-AC</option>
+                <option value="Double AC">Double AC</option>
+                <option value="Double Non-AC">Double Non-AC</option>
+              </select>
+            </div>
+            <div class="space-y-1">
+              <label class="text-[10px] font-black uppercase text-slate-400 ml-2">Year Restriction</label>
+              <select id="r-yeargroup" class="w-full px-5 py-4 rounded-2xl bg-slate-100 dark:bg-white/5 outline-none dark:text-white">
+                <option value="Freshman">Freshman floor (1st year only)</option>
+                <option value="Senior">Senior floor (2nd–4th year)</option>
+              </select>
+            </div>
+            <div class="space-y-1">
+              <label class="text-[10px] font-black uppercase text-slate-400 ml-2">Capacity Unit</label>
+              <input type="number" id="r-cap" value="1" min="1" required class="w-full px-5 py-4 rounded-2xl bg-slate-100 dark:bg-white/5 outline-none">
+            </div>
+            <button type="submit" class="w-full py-5 bg-purple-600 text-white font-black rounded-2xl shadow-xl">ADD TO INVENTORY</button>
+          </form>
+        </div>
+        <div class="lg:col-span-2 glass-ui rounded-[3rem] overflow-hidden">
+          <div class="p-8 border-b dark:border-white/10 bg-slate-50/50 dark:bg-white/5">
+            <h3 class="text-xl font-black">Room Master List</h3>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 p-8" id="room-grid"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- DAA Engine Tab -->
+    <section id="tab-engine" class="tab-content hidden">
+      <div class="max-w-5xl mx-auto space-y-8">
+        <div class="glass-ui p-16 rounded-[4rem] text-center border-2 border-dashed border-blue-400 relative overflow-hidden">
+          <div class="relative z-10">
+            <h2 class="text-4xl font-black mb-4">Greedy Protocol Engine</h2>
+            <p class="text-slate-500 mb-10 max-w-md mx-auto">Click initialize to sort candidates by priority vectors and allocate available inventory units.</p>
+            <div class="flex flex-col sm:flex-row justify-center gap-4">
+              <button onclick="executeAllocation()" class="px-12 py-6 bg-blue-600 text-white font-black text-xl rounded-3xl shadow-2xl hover:bg-blue-700 hover:scale-105 transition-all">INITIALIZE PROCESS</button>
+              <button onclick="exportResults()" class="px-12 py-6 bg-slate-900 text-white font-black text-xl rounded-3xl shadow-2xl hover:bg-black transition-all">EXPORT REPORT</button>
+            </div>
+          </div>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div class="glass-ui p-8 rounded-[3rem] border-t-8 border-blue-500">
+            <h3 class="text-xl font-black mb-6 flex items-center justify-between">
+              Successfully Allocated
+              <span id="count-allocated" class="text-xs bg-blue-100 dark:bg-blue-900 text-blue-600 px-3 py-1 rounded-full">0</span>
+            </h3>
+            <div id="allocated-list" class="space-y-4"></div>
+          </div>
+          <div class="glass-ui p-8 rounded-[3rem] border-t-8 border-orange-500">
+            <h3 class="text-xl font-black mb-6 flex items-center justify-between">
+              Waiting/Overflow Queue
+              <span id="count-waiting" class="text-xs bg-orange-100 dark:bg-orange-900 text-orange-600 px-3 py-1 rounded-full">0</span>
+            </h3>
+            <div id="waiting-list" class="space-y-4"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Analytics Tab -->
+    <section id="tab-analytics" class="tab-content hidden space-y-8">
+      <div class="glass-ui p-12 rounded-[4rem]">
+        <h2 class="text-4xl font-black mb-12 tracking-tighter">Performance Analysis</h2>
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+          <div class="space-y-8">
+            <div>
+              <h4 class="text-[10px] font-black uppercase text-blue-500 mb-4 tracking-widest">Greedy Choice Efficiency</h4>
+              <p class="text-slate-500 dark:text-slate-400 leading-relaxed">
+                The system sorts the student array using:<br>
+                • Year 1 → earliest payment date<br>
+                • Years 2–4 → Final Score = 0.6 × (CGPA/10) + 0.4 × (year/4)<br>
+                • Freshman rooms are exclusive to 1st year students
+              </p>
+            </div>
+            <div class="p-8 rounded-[2rem] bg-slate-50 dark:bg-white/5 border border-slate-100 dark:border-white/10">
+              <h4 class="text-lg font-black mb-4">Space-Time Complexity</h4>
+              <div class="grid grid-cols-2 gap-6">
+                <div>
+                  <span class="text-[10px] font-black text-slate-400 uppercase">Worst Case</span>
+                  <p class="text-2xl font-mono font-black text-blue-600">O(N log N)</p>
+                </div>
+                <div>
+                  <span class="text-[10px] font-black text-slate-400 uppercase">Auxiliary Space</span>
+                  <p class="text-2xl font-mono font-black text-purple-600">O(N + M)</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="flex flex-col justify-center">
+            <div class="mt-8 p-6 glass-ui rounded-3xl border-l-8 border-indigo-500">
+              <p class="italic text-slate-500 dark:text-slate-400 text-sm">
+                "Freshman floor separation + weighted seniority ensures fair and policy-compliant allocation."
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ====================== SUPPORT SECTION ====================== -->
+    <section id="tab-support" class="tab-content hidden">
+      <div class="max-w-2xl mx-auto">
+        <div class="glass-ui border border-white/20 dark:border-white/10 rounded-[3rem] p-10 shadow-2xl">
+          <div class="flex items-center justify-center gap-x-3 mb-6">
+            <div class="px-6 py-2 bg-[#25D366]/10 text-[#25D366] text-sm font-semibold rounded-3xl flex items-center gap-x-2">
+              <span class="text-xl">📲</span>
+              INSTANT WHATSAPP SUPPORT
+            </div>
+          </div>
+          <h1 class="text-4xl font-black text-center mb-3 tracking-tight">Support Desk</h1>
+          <p class="text-center text-slate-500 dark:text-slate-400 mb-10 text-lg">
+            Send a message directly to the administrative support team via WhatsApp.
+          </p>
+          <textarea
+            id="support-message"
+            rows="8"
+            placeholder="Describe your issue or request here...&#10;e.g., Need help with room allocation for a new candidate."
+            class="textarea-glass w-full rounded-3xl px-7 py-6 text-base border border-white/20 dark:border-white/10 focus:border-[#25D366] resize-none focus:outline-none placeholder:text-slate-400 dark:placeholder:text-slate-500"></textarea>
+          <button onclick="sendToWhatsApp()"
+                  class="whatsapp-btn mt-8 w-full bg-[#25D366] hover:bg-[#20ba5a] text-white font-black text-xl py-7 rounded-3xl flex items-center justify-center gap-x-3 shadow-xl active:scale-95">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.198-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.485-.888-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.095 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.355L2 21l1.395-4.69a9.958 9.958 0 01-1.323-5.255c0-5.477 4.46-9.93 9.94-9.93 2.655 0 5.147 1.036 7.02 2.91 1.873 1.873 2.907 4.366 2.907 7.02 0 5.478-4.46 9.93-9.94 9.93z"/>
+            </svg>
+            Send to WhatsApp
+          </button>
+          <div class="text-center text-xs text-slate-400 dark:text-slate-500 mt-6">
+            Opens WhatsApp Web on desktop • Opens WhatsApp App on mobile
+          </div>
+        </div>
+        <p class="text-center text-[10px] text-slate-400 mt-8">
+          💡 The WhatsApp number can be changed in the JavaScript code (variable: PHONE_NUMBER)
+        </p>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+  <script src="js/app.js" defer></script>
+
+</body>
+</html>

@@ -1,0 +1,50 @@
+::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: #3b82f6; border-radius: 10px; }
+    html { transition: background-color 0.5s ease; scroll-behavior: smooth; }
+    .dark body { background-color: #05050a; color: #f1f5f9; }
+    body { background-color: #f8fafc; color: #0f172a; transition: all 0.5s ease; }
+    .glass-ui {
+      background: rgba(255,255,255,0.7);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(0,0,0,0.05);
+      transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
+    }
+    .dark .glass-ui {
+      background: rgba(15,23,42,0.6);
+      border: 1px solid rgba(255,255,255,0.05);
+    }
+    .status-pulse { animation: pulse 2s infinite; }
+    @keyframes pulse { 0%,100% {opacity:1} 50% {opacity:0.4} }
+    .slide-up { animation: slideUp 0.6s ease-out forwards; }
+    @keyframes slideUp { from {opacity:0; transform:translateY(30px)} to {opacity:1; transform:translateY(0)} }
+    .tab-active { background-color:#2563eb !important; color:#fff !important; box-shadow:0 10px 15px -3px rgba(59,130,246,.3) !important; transform:scale(1.05); }
+    .log-entry { border-left:2px solid #3b82f6; padding-left:10px; margin-bottom:4px; font-size:11px; }
+    .log-success { border-color:#10b981; color:#10b981; }
+    .log-error { border-color:#ef4444; color:#ef4444; }
+    .shake { animation: shake 0.5s; }
+    @keyframes shake {
+      0%,100% { transform:translateX(0); }
+      10%,30%,50%,70%,90% { transform:translateX(-8px); }
+      20%,40%,60%,80% { transform:translateX(8px); }
+    }
+
+    /* Support Section Styles */
+    .whatsapp-btn {
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .whatsapp-btn:hover {
+      transform: scale(1.03);
+      box-shadow: 0 20px 25px -5px rgb(37 211 102 / 0.3);
+    }
+    .textarea-glass {
+      background: rgba(255, 255, 255, 0.06);
+      transition: all 0.3s ease;
+    }
+    .dark .textarea-glass {
+      background: rgba(15, 23, 42, 0.6);
+    }
+    .textarea-glass:focus {
+      background: rgba(255, 255, 255, 0.12);
+      box-shadow: 0 0 0 3px rgba(37, 211, 102, 0.3);
+    }
