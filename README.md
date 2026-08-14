@@ -306,13 +306,18 @@ Google Fonts
 
 The application is intended to use the following structure:
 
-hostel-allocator/
+
+hostel-allocator
+
 │
 ├── index.html
-├── css/
+├── css
+
 │   └── style.css
-├── js/
+├── js
+
 │   └── app.js
+
 └── README.md
 
 index.html
